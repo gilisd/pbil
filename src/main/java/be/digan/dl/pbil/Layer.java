@@ -1,7 +1,7 @@
 package be.digan.dl.pbil;
 
 public interface Layer {
-    double[] calculate(final double[] wiehgts, final double[] input);
+    double[] calculate(final double[] weights, final double[] input);
 
     int getWeightCount();
 
