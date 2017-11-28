@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DenseLayer implements Layer {
+    private final int weightCount;
     List<Node> nodes;
 
     public DenseLayer(int inputSize, int outputSize) {
@@ -12,6 +13,7 @@ public class DenseLayer implements Layer {
             int start = i * (inputSize + 1);
             nodes.add(new Node(inputSize));
         }
+        weightCount = nodes.stream().mapToInt(n -> n.getWeightCount()).sum();
      }
 
     public double[] calculate(final double[] weights, final double[] input) {
@@ -20,7 +22,7 @@ public class DenseLayer implements Layer {
     }
 
     public int getWeightCount() {
-        return nodes.stream().mapToInt(n -> n.getWeightCount()).sum();
+        return weightCount;
     }
 
     public int setWeightIndex(int index) {

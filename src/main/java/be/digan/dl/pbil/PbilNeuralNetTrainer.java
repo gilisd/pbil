@@ -8,7 +8,7 @@ import java.util.stream.IntStream;
 public class PbilNeuralNetTrainer {
     private static final int GENERATION_COUNT = 5000;
     private static final int POPULATION = 100;
-    private static final int PLAY_COUNT = 50;
+    private static final int BATCH_SIZE = 50;
     private Experiment[] mnist_data;
 
     private Random random = new Random();
@@ -22,63 +22,85 @@ public class PbilNeuralNetTrainer {
         chromosoneSize = net.getWeightCount();
         this.mnist_test = mnist_test;
 
+        // select batch
+        int[] batch = getBatch();
         // Pick initial genotype by random search
+        double[] genotype = getInitialGenotype(batch);
+
+        for (int i = 1; i<=GENERATION_COUNT; i++) {
+            genotype = nextGeneration(genotype, i);
+        }
+        System.out.println();
+        System.out.println(" histogram count calculated with confidence : [0,0.1,0.2,...,0.9,1]" );
+
+    }
+
+    private double[] nextGeneration(double[] genotype, int generation) {
+        int[] batch = getBatch();
+        double[] betterWeights = genotype;
+        double better = calculateQuality(batch, betterWeights);
+        for (int j = 0; j<POPULATION; j++) {
+
+            double[] newWeights = generatePbil(generation, genotype);
+            double newQuality = calculateQuality(batch, newWeights);
+            double difference = newQuality - better;
+            boolean isBetter = difference > 0;
+            if (isBetter) {
+                betterWeights = newWeights;
+                better = newQuality;
+            }
+        }
+        genotype = betterWeights;
+        logQuality(generation, genotype);
+        return genotype;
+    }
+
+    private double[] getInitialGenotype(int[] batch) {
         double[] bestWeights = getRandom();
+        double best = calculateQuality(batch, bestWeights);
         for (int i = 0; i<POPULATION; i++) {
             double[] newWeights = getRandom();
-            if (isBetter(newWeights, bestWeights)) {
+            double newQuality = calculateQuality(batch, newWeights);
+            double difference = newQuality - best;
+            boolean isBetter = difference > 0;
+            if (isBetter) {
                 bestWeights = newWeights;
+                best = newQuality;
             }
         }
         logQuality(0, bestWeights);
-        for (int i = 0; i<GENERATION_COUNT; i++) {
-            double[] betterWeights = bestWeights;
-            for (int j = 0; j<POPULATION; j++) {
+        return bestWeights;
+    }
 
-                double[] newWeights = generatePbil(i, bestWeights);
-                if (isBetter(newWeights, betterWeights)) {
-                    betterWeights = newWeights;
-                }
-            }
-            bestWeights = betterWeights;
-            logQuality(i, bestWeights);
-        }
-        System.out.println(" histogram count calculated with confidence : [0,.1,.2,...]" );
+    private double calculateQuality(int[] batch, double[] weights) {
+        return Arrays.stream(batch).parallel().mapToDouble(element -> net.calculate(weights, this.mnist_data[element].getInput())[this.mnist_data[element].getOutput()]).sum();
+    }
 
+    private int[] getBatch() {
+        return IntStream.range(0, BATCH_SIZE).map(i-> random.nextInt(mnist_data.length)).toArray();
     }
 
     private void logQuality(int generation, double[] weights) {
-        if (generation%10 !=0) {
-            System.out.println("Generation " + generation +": no log");
-            return;
+        if ( (generation < 10) || ((generation<100) && (generation%10==0)) || (generation%100 == 0)) {
+            int testCount = 1000; //mnist_test.length
+            double totalQuality = 0;
+            int[] histo = new int[11];
+            int[] byDigit = new int[10];
+            for (int j = 0; j < testCount; j++) {
+                int element = j;
+                double result = net.calculate(weights, mnist_test[element].getInput())[mnist_test[element].getOutput()];
+                double quality = result;
+                histo[(int) (result * 10)] = histo[(int) (result * 10)] + 1;
+                byDigit[mnist_test[element].getOutput()] += result > .5 ? 1 : 0;
+                // quality: closer to one is better
+                totalQuality += quality;
+            }
+            double quality = totalQuality / testCount;
+            System.out.println();
+            System.out.println("Generation " + generation + ": deviation: " + quality + " histogram: " + Arrays.toString(histo) + ", by digit " + Arrays.toString(byDigit));
+        } else {
+            System.out.print(generation%10 !=0?".":"*");
         }
-        int testCount = 1000; //mnist_test.length
-        double totalQuality = 0;
-        int[] histo=new int[11];
-        int[] byDigit=new int[10];
-        for (int j = 0; j < testCount; j++) {
-            int element = j;
-            double result = net.calculate(weights, mnist_test[element].getInput())[mnist_test[element].getOutput()];
-            double quality = result;
-            histo[(int)(result *10)]=histo[(int)(result *10)]+1;
-            byDigit[mnist_test[element].getOutput()]+=result>.5?1:0;
-            // quality: closer to one is better
-            totalQuality += quality;
-        }
-        double quality = totalQuality/ testCount;
-        System.out.println("Generation " + generation +": deviation: " + quality + " histogram: " + Arrays.toString(histo) + ", by digit " + Arrays.toString(byDigit));
-
-    }
-    private boolean isBetter(double[] newWeights, double[] oldWeights) {
-        double total = 0;
-        for (int j = 0; j < PLAY_COUNT; j++) {
-            int element = random.nextInt(mnist_data.length);
-            double qualityOld = net.calculate(oldWeights, mnist_data[element].getInput())[mnist_data[element].getOutput()];
-            double qualityNew = net.calculate(newWeights, mnist_data[element].getInput())[mnist_data[element].getOutput()];
-            // quality: closer to one is better
-            total += qualityNew - qualityOld;
-        }
-        return total > 0;
     }
 
     private double[] getRandom() {

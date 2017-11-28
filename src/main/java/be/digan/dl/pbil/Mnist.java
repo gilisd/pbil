@@ -19,7 +19,8 @@ public class Mnist {
         mnist_data = read_csv(MNIST_FOLDER + "/mnist_train.csv");
 
         PbilNeuralNetTrainer trainer = new PbilNeuralNetTrainer();
-        NeuralNet net = getSingleLayerExperiment();
+        NeuralNet net = getDualLayerExperiment();
+//        NeuralNet net = getSingleLayerExperiment();
 
         trainer.trainNetwork(net, mnist_data, mnist_test);
 
