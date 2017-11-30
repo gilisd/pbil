@@ -1,12 +1,15 @@
 package be.digan.dl.pbil;
 
+import org.apache.log4j.Logger;
+
 import java.util.Arrays;
 import java.util.Random;
 import java.util.stream.IntStream;
 
 // Reduce memory load by evaluating item by item
 public class PbilNeuralNetTrainer {
-    private static final int GENERATION_COUNT = 5000;
+    private static final Logger LOG = Logger.getLogger(PbilNeuralNetTrainer.class);
+    private static final int GENERATION_COUNT = 100;
     private static final int POPULATION = 100;
     private static final int BATCH_SIZE = 50;
     private Experiment[] mnist_data;
@@ -30,8 +33,8 @@ public class PbilNeuralNetTrainer {
         for (int i = 1; i<=GENERATION_COUNT; i++) {
             genotype = nextGeneration(genotype, i);
         }
-        System.out.println();
-        System.out.println(" histogram count calculated with confidence : [0,0.1,0.2,...,0.9,1]" );
+
+        LOG.info(" histogram count calculated with confidence : [0,0.1,0.2,...,0.9,1]" );
 
     }
 
@@ -51,7 +54,7 @@ public class PbilNeuralNetTrainer {
             }
         }
         genotype = betterWeights;
-        logQuality(generation, genotype);
+        logQuality(generation, genotype, better/BATCH_SIZE);
         return genotype;
     }
 
@@ -68,7 +71,7 @@ public class PbilNeuralNetTrainer {
                 best = newQuality;
             }
         }
-        logQuality(0, bestWeights);
+        logQuality(0, bestWeights, best);
         return bestWeights;
     }
 
@@ -80,7 +83,7 @@ public class PbilNeuralNetTrainer {
         return IntStream.range(0, BATCH_SIZE).map(i-> random.nextInt(mnist_data.length)).toArray();
     }
 
-    private void logQuality(int generation, double[] weights) {
+    private void logQuality(int generation, double[] weights, double estimatedQuality) {
         if ( (generation < 10) || ((generation<100) && (generation%10==0)) || (generation%100 == 0)) {
             int testCount = 1000; //mnist_test.length
             double totalQuality = 0;
@@ -96,10 +99,9 @@ public class PbilNeuralNetTrainer {
                 totalQuality += quality;
             }
             double quality = totalQuality / testCount;
-            System.out.println();
-            System.out.println("Generation " + generation + ": deviation: " + quality + " histogram: " + Arrays.toString(histo) + ", by digit " + Arrays.toString(byDigit));
+            LOG.info("Generation " + generation + ": deviation: " + quality + " histogram: " + Arrays.toString(histo) + ", by digit " + Arrays.toString(byDigit));
         } else {
-            System.out.print(generation%10 !=0?".":"*");
+            LOG.debug("Generation " + generation + ": estimated deviation: " + estimatedQuality);
         }
     }
 

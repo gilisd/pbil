@@ -1,11 +1,15 @@
 package be.digan.dl.pbil;
 
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Date;
 
 public class Mnist {
+    private static final Logger LOG = Logger.getLogger(Mnist.class);
     private static final String MNIST_FOLDER = "/home/david/MNIST";
     private static Experiment[] mnist_test;
     private static Experiment[] mnist_data;
@@ -19,11 +23,12 @@ public class Mnist {
         mnist_data = read_csv(MNIST_FOLDER + "/mnist_train.csv");
 
         PbilNeuralNetTrainer trainer = new PbilNeuralNetTrainer();
-        NeuralNet net = getDualLayerExperiment();
-//        NeuralNet net = getSingleLayerExperiment();
+//        NeuralNet net = getDualLayerExperiment();
+        NeuralNet net = getSingleLayerExperiment();
 
+        long before = new Date().getTime();
         trainer.trainNetwork(net, mnist_data, mnist_test);
-
+        LOG.info("Spend " + ((new Date().getTime() - before)/1000) + " sec training");
     }
 
     private static NeuralNet getSingleLayerExperiment() {
