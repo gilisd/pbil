@@ -22,9 +22,12 @@ public class Mnist {
         mnist_test = read_csv(MNIST_FOLDER + "/mnist_test.csv");
         mnist_data = read_csv(MNIST_FOLDER + "/mnist_train.csv");
 
-        PbilNeuralNetTrainer trainer = new PbilNeuralNetTrainer();
+        PbilNeuralNetTrainer trainer
+
+                = new PbilNeuralNetTrainer();
+        NeuralNet net = getTripleLayerExperiment();
 //        NeuralNet net = getDualLayerExperiment();
-        NeuralNet net = getSingleLayerExperiment();
+//        NeuralNet net = getSingleLayerExperiment();
 
         long before = new Date().getTime();
         trainer.trainNetwork(net, mnist_data, mnist_test);
@@ -39,8 +42,16 @@ public class Mnist {
     }
     private static NeuralNet getDualLayerExperiment() {
         NeuralNet net = new NeuralNet();
-        net.addLayer(new DenseLayer(28*28,800));
-        net.addLayer(new DenseLayer(800,10));
+        net.addLayer(new DenseLayer(28*28,28*28));
+        net.addLayer(new DenseLayer(28*28,10));
+        net.addLayer(new Softmax());
+        return net;
+    }
+    private static NeuralNet getTripleLayerExperiment() {
+        NeuralNet net = new NeuralNet();
+        net.addLayer(new DenseLayer(28*28,100));
+        net.addLayer(new DenseLayer(100,50));
+        net.addLayer(new DenseLayer(50,10));
         net.addLayer(new Softmax());
         return net;
     }
@@ -52,8 +63,8 @@ public class Mnist {
     private static Experiment readline(String s) {
         String[] split = s.split(",");
         int output = new Integer(split[0]);
-        double[] input = Arrays.stream(split, 1, split.length)
-                .map(String::trim).mapToDouble(Integer::parseInt).toArray();
+        long[] input = Arrays.stream(split, 1, split.length)
+                .map(String::trim).mapToLong(Integer::parseInt).map(i -> i * NeuralNet.FACTOR).toArray();
         return new Experiment(input, output);
     }
 }

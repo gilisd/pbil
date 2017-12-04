@@ -6,11 +6,11 @@ public class Softmax implements Layer {
 
 
     @Override
-    public double[] calculate(double[] weights, double[] input) {
-        double[] exp = Arrays.stream(input).map(i -> Math.exp(i)).toArray();
+    public long[] calculate(long[] weights, long[] input) {
+        double[] exp = Arrays.stream(input).mapToDouble(i -> Math.exp((double)i / NeuralNet.FACTOR)).toArray();
         double sum = Arrays.stream(exp).sum();
 
-        double[] collect = Arrays.stream(exp).map(i -> i / sum).toArray();
+        long[] collect = Arrays.stream(exp).mapToLong(i -> (long)((i / sum) * NeuralNet.FACTOR)).toArray();
         return collect;
     }
 
@@ -24,4 +24,15 @@ public class Softmax implements Layer {
     public int setWeightIndex(int weightIndex) {
         return weightIndex;
     }
+
+    @Override
+    public int[] appendWeightStructure(int[] baseStructure) {
+        return baseStructure;
+    }
+
+    @Override
+    public String toString() {
+        return "Softmax()";
+    }
+
 }

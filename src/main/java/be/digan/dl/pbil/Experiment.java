@@ -1,15 +1,15 @@
 package be.digan.dl.pbil;
 
 public class Experiment {
-    final private double[] input;
+    final private long[] input;
     final private int output;
 
-    public Experiment(double[] input, int output) {
+    public Experiment(long[] input, int output) {
         this.input = input;
         this.output = output;
     }
 
-    public double[] getInput() {
+    public long[] getInput() {
         return input;
     }
 

@@ -1,9 +1,11 @@
 package be.digan.dl.pbil;
 
 public interface Layer {
-    double[] calculate(final double[] weights, final double[] input);
+    long[] calculate(final long[] weights, final long[] input);
 
     int getWeightCount();
 
     int setWeightIndex(int index);
+
+    int[] appendWeightStructure(int[] baseStructure);
 }

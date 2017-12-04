@@ -1,7 +1,10 @@
 package be.digan.dl.pbil;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class DenseLayer implements Layer {
     private final int weightCount;
@@ -16,8 +19,8 @@ public class DenseLayer implements Layer {
         weightCount = nodes.stream().mapToInt(n -> n.getWeightCount()).sum();
      }
 
-    public double[] calculate(final double[] weights, final double[] input) {
-        double[] result = nodes.stream().mapToDouble(n -> n.calculate(weights, input)).toArray();
+    public long[] calculate(final long[] weights, final long[] input) {
+        long[] result = nodes.stream().mapToLong(n -> n.calculate(weights, input)).toArray();
         return result;
     }
 
@@ -32,5 +35,23 @@ public class DenseLayer implements Layer {
             index += count;
         }
         return index;
+    }
+
+    @Override
+    public int[] appendWeightStructure(int[] baseStructure) {
+        int nextInt = baseStructure.length>0?baseStructure[baseStructure.length-1]:0;
+        IntStream list = Arrays.stream(baseStructure);
+        for (Node node : nodes) {
+            int finalNextInt = nextInt;
+            list = IntStream.concat(list, IntStream.range(0, node.getWeightCount()).map(i-> finalNextInt));
+            nextInt++;
+        }
+
+        return list.toArray();
+    }
+
+    @Override
+    public String toString() {
+        return "DenseLayer(in: "+ (nodes.get(0).getWeightCount() -1) + ", out: " + nodes.size() +")";
     }
 }

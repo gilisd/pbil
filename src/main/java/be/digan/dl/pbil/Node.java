@@ -10,7 +10,7 @@ public class Node {
         this.weightCount = weightCount;
     }
 
-    private Double relu(Double value) {
+    private long relu(long value) {
         return value<0?0:value;
     }
 
@@ -26,9 +26,9 @@ public class Node {
         return new Node(weightCount);
     }
 
-    public double calculate(final double[] weights, final double[] input) {
-        Double value = IntStream.range(0, input.length)
-                .mapToDouble(i -> input[i] * weights[weightIndex + i])
+    public long calculate(final long[] weights, final long[] input) {
+        long value = IntStream.range(0, input.length)
+                .mapToLong(i -> input[i] * weights[weightIndex + i] / NeuralNet.FACTOR)
                 .sum() + weights[weightIndex + weightCount];
         return relu(value);
     }
