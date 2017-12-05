@@ -1,0 +1,4 @@
+Division is needed to remove the incremental increase of weights
+However bias is not invariant,
+
+Experiment remove bias

@@ -11,7 +11,8 @@ public class Node {
     }
 
     private long relu(long value) {
-        return value<0?0:value;
+        return (long)(Math.tanh((double)value / NeuralNet.FACTOR) * NeuralNet.FACTOR);
+        //return value<0?0:value;
     }
 
     public int getWeightCount() {
@@ -29,7 +30,7 @@ public class Node {
     public long calculate(final long[] weights, final long[] input) {
         long value = IntStream.range(0, input.length)
                 .mapToLong(i -> input[i] * weights[weightIndex + i] / NeuralNet.FACTOR)
-                .sum() + weights[weightIndex + weightCount];
+                .sum();// + weights[weightIndex + weightCount];
         return relu(value);
     }
 }

@@ -2,14 +2,13 @@ package be.digan.dl.pbil;
 
 import java.util.Arrays;
 
-public class Softmax implements Layer {
+public class FlattenMin implements Layer {
 
 
     @Override
     public long[] calculate(long[] weights, long[] input) {
-        long max = NeuralNet.FACTOR;//Arrays.stream(input).max().getAsLong();
-
-        double[] exp = Arrays.stream(input).mapToDouble(i -> Math.exp((double)i / max)).toArray();
+        long min = Arrays.stream(input).min().getAsLong();
+        double[] exp = Arrays.stream(input).mapToDouble(i -> i - min ).toArray();
         double sum = Arrays.stream(exp).sum();
 
         long[] collect = Arrays.stream(exp).mapToLong(i -> (long)((i / sum) * NeuralNet.FACTOR)).toArray();
@@ -34,7 +33,7 @@ public class Softmax implements Layer {
 
     @Override
     public String toString() {
-        return "Softmax()";
+        return "FlattenMin()";
     }
 
 }
