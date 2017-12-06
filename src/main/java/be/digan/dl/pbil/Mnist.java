@@ -52,8 +52,8 @@ public class Mnist {
         net.addLayer(new DenseLayer(28*28,100));
         net.addLayer(new DenseLayer(100,50));
         net.addLayer(new DenseLayer(50,10));
-        net.addLayer(new Softmax());
-//        net.addLayer(new FlattenMin());
+//        net.addLayer(new Softmax());
+        net.addLayer(new FlattenMin());
         return net;
     }
 

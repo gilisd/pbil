@@ -2,3 +2,37 @@ Division is needed to remove the incremental increase of weights
 However bias is not invariant,
 
 Experiment remove bias
+
+
+6/12
+Set baseline:
+DenseLayer(in: 784, out: 100) - DenseLayer(in: 100, out: 50) - DenseLayer(in: 50, out: 10) - Softmax()
+1000 generations / pop=100 / batch=100
+start 9:11
+result =0.610504
+time =6546s
+
+Experiment 1: Alter single gene
+DenseLayer(in: 784, out: 100) - DenseLayer(in: 100, out: 50) - DenseLayer(in: 50, out: 10) - Softmax()
+1000 generations / pop=100 / batch=100
+start 11:02
+result =deviation:   0.209518
+time =5256 sec
+
+Looks promising... Try the same with 20000
+
+Experiment 2: same 20000 generations
+Other PC
+DenseLayer(in: 784, out: 100) - DenseLayer(in: 100, out: 50) - DenseLayer(in: 50, out: 10) - Softmax()
+20000 generations / pop=100 / batch=100
+start 14:36
+result =
+time =
+
+Experiment 3: relu replace by tanh
+1000 generations / pop=100 / batch=100
+start 14:39
+result = quit
+time =
+
+Experiment 4: relu -> tanh + flattenmin

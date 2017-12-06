@@ -8,10 +8,11 @@ public class FlattenMin implements Layer {
     @Override
     public long[] calculate(long[] weights, long[] input) {
         long min = Arrays.stream(input).min().getAsLong();
-        double[] exp = Arrays.stream(input).mapToDouble(i -> i - min ).toArray();
+        long max = Arrays.stream(input).max().getAsLong();
+        double[] exp = Arrays.stream(input).mapToDouble(i -> (((double)i - min)/(max-min) / input.length)).toArray();
         double sum = Arrays.stream(exp).sum();
 
-        long[] collect = Arrays.stream(exp).mapToLong(i -> (long)((i / sum) * NeuralNet.FACTOR)).toArray();
+        long[] collect = Arrays.stream(exp).mapToLong(i -> (long)(i / sum * NeuralNet.FACTOR)).toArray();
         return collect;
     }
 

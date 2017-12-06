@@ -118,10 +118,15 @@ public class PbilNeuralNetTrainer {
             int[] byDigit = new int[10];
             for (int j = 0; j < testCount; j++) {
                 int element = j;
-                double result = (double) net.calculate(weights, mnist_test[element].getInput())[mnist_test[element].getOutput()] / NeuralNet.FACTOR;
+                long[] calculate = net.calculate(weights, mnist_test[element].getInput());
+                double result = (double) calculate[mnist_test[element].getOutput()] / NeuralNet.FACTOR;
                 double quality = result;
+
+                int found = IntStream.range(0, calculate.length)
+                        .reduce((a,b)->calculate[a]<calculate[b]? b: a)
+                        .getAsInt();
                 histo[(int) (result * 10)] = histo[(int) (result * 10)] + 1;
-                byDigit[mnist_test[element].getOutput()] += result > .5 ? 1 : 0;
+                byDigit[mnist_test[element].getOutput()] += found == mnist_test[element].getOutput() ? 1 : 0;
                 // quality: closer to one is better
                 totalQuality += quality;
             }
