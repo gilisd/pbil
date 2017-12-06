@@ -58,7 +58,7 @@ public class PbilNeuralNetTrainer {
 
         LOG.info("histogram count calculated with confidence : [0,0.1,0.2,...,0.9,1]");
 
-        LOG.info("winner: " + genotype);
+        LOG.info("winner: " + Arrays.toString(genotype));
         logQuality(99999900, genotype, 0, mnist_test.length, full_list_result);
     }
 
@@ -167,6 +167,13 @@ public class PbilNeuralNetTrainer {
 
 
     private long[] generatePbil(int generation, long[] best) {
+        int deviation = (int)((.001 + (double) (GENERATION_COUNT - generation) / GENERATION_COUNT ) * NeuralNet.FACTOR / 784) *5;
+     //   int deviation = NeuralNet.FACTOR * 2 / 784 ;
+        int geneToChange = random.nextInt(weightStructure[weightStructure.length - 1] + 1);
+        long[] result = IntStream.range(0, best.length).mapToLong(i -> best[i] + (weightStructure[i] != geneToChange ? 0 : (random.nextInt(deviation * 2 +1) - deviation))).toArray();
+        return result;
+    }
+   private long[] generatePbilOriginal(int generation, long[] best) {
         int deviation = (int)((.001 + (double) (GENERATION_COUNT - generation) / GENERATION_COUNT ) * NeuralNet.FACTOR / 784) *5;
      //   int deviation = NeuralNet.FACTOR * 2 / 784 ;
         Boolean[] keepGene = IntStream.range(0, weightStructure[weightStructure.length - 1] + 1).mapToObj(i -> (Boolean) (Math.random() > .8)).toArray(Boolean[]::new);
