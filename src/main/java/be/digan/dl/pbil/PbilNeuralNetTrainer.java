@@ -14,7 +14,7 @@ import static java.util.stream.Collectors.joining;
 // Reduce memory load by evaluating item by item
 public class PbilNeuralNetTrainer {
     private static final Logger LOG = Logger.getLogger(PbilNeuralNetTrainer.class);
-    private static final int GENERATION_COUNT = 20000;
+    private static final int GENERATION_COUNT = 1000;
     private static final int POPULATION = 100;
     private static final int BATCH_SIZE = 100;
     private static final int TEST_COUNT = 1000;
@@ -144,7 +144,7 @@ public class PbilNeuralNetTrainer {
     }
 
     private String writeArray(int[] histo, int[] compare) {
-        return "[" + Arrays.stream(histo).mapToObj(i -> String.format("%3d%%", (i *100 / compare[i]))).collect(joining(", ")) + "]";
+        return "[" + IntStream.range(0,10).mapToObj(i -> String.format("%3d%%", (histo[i] *100 / compare[i]))).collect(joining(", ")) + "]";
     }
 
     private String writeArray(long[] histo) {
