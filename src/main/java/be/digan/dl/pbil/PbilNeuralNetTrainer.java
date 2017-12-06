@@ -168,7 +168,7 @@ public class PbilNeuralNetTrainer {
 
     private long[] generatePbil(int generation, long[] best) {
         int deviation = (int)((.001 + (double) (GENERATION_COUNT - generation) / GENERATION_COUNT ) * NeuralNet.FACTOR / 784) *5;
-     //   int deviation = NeuralNet.FACTOR * 2 / 784 ; //TODO +1 to avoid negative bias
+     //   int deviation = NeuralNet.FACTOR * 2 / 784 ;
         Boolean[] keepGene = IntStream.range(0, weightStructure[weightStructure.length - 1] + 1).mapToObj(i -> (Boolean) (Math.random() > .8)).toArray(Boolean[]::new);
         long[] result = IntStream.range(0, best.length).mapToLong(i -> best[i] + (keepGene[weightStructure[i]] ? 0 : (random.nextInt(deviation * 2 +1) - deviation))).toArray();
 //        long[] result =  IntStream.range(0, best.length).mapToLong(i -> best[i] + ((random.nextInt(deviation * 2)-deviation))).toArray();
