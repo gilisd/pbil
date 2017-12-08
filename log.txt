@@ -26,8 +26,8 @@ Other PC
 DenseLayer(in: 784, out: 100) - DenseLayer(in: 100, out: 50) - DenseLayer(in: 50, out: 10) - Softmax()
 20000 generations / pop=100 / batch=100
 start 14:36
-result =
-time =
+result = ok
+time = LONG
 
 Experiment 3: relu replace by tanh
 1000 generations / pop=100 / batch=100
@@ -36,3 +36,16 @@ result = quit
 time =
 
 Experiment 4: relu -> tanh + flattenmin
+2017-12-06 18:26:42,235 | INFO  | Generation 99999900: deviation:   0.222336 histogram: [ 26%,  38%,   8%,   6%,   6%,   6%,   4%,   1%,   0%,   0%,   0%], by digit [  0%,  98%,  28%,  91%,   1%,   0%,  77%,   2%,   8%,   0%]
+2017-12-06 18:26:42,235 | INFO  | Spend 5384 sec training
+
+Experiment 5: relu -> tanh + flattenmin - 10000
+To slow / stuck in local optimum
+-> try with division of weights, should do better on flattenmin
+
+Experiment 6: same but
+10000 generations / pop=50 / batch=50
+divide by two if > 2*
+-> no division effect noticed
+
+Experiment 7: added punishment -1 for wrong selection

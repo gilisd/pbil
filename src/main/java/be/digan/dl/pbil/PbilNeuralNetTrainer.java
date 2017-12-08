@@ -14,9 +14,9 @@ import static java.util.stream.Collectors.joining;
 // Reduce memory load by evaluating item by item
 public class PbilNeuralNetTrainer {
     private static final Logger LOG = Logger.getLogger(PbilNeuralNetTrainer.class);
-    private static final int GENERATION_COUNT = 1000;
-    private static final int POPULATION = 100;
-    private static final int BATCH_SIZE = 100;
+    private static final int GENERATION_COUNT = 10000;
+    private static final int POPULATION = 50;
+    private static final int BATCH_SIZE = 250;
     private static final int TEST_COUNT = 1000;
     private Experiment[] mnist_data;
 
@@ -63,8 +63,8 @@ public class PbilNeuralNetTrainer {
     }
 
     private long[] nextGeneration(long[] genotype, int generation) {
-//        if (Arrays.stream(genotype).map(i -> Math.abs(i)).average().getAsDouble() > NeuralNet.FACTOR * 16 / 784) { //NORMALIZE
-//            genotype = Arrays.stream(genotype).map(y -> y / 8).toArray();
+//        if (Arrays.stream(genotype).map(i -> Math.abs(i)).average().getAsDouble() > NeuralNet.FACTOR * 2 / 784) { //NORMALIZE
+//            genotype = Arrays.stream(genotype).map(y -> y / 2).toArray();
 //            LOG.warn("DIVISION");
 //        }
         int[] batch = getBatch();
@@ -104,7 +104,17 @@ public class PbilNeuralNetTrainer {
     }
 
     private double calculateQuality(int[] batch, long[] weights) {
-        return Arrays.stream(batch).parallel().mapToDouble(element -> (double) net.calculate(weights, this.mnist_data[element].getInput())[this.mnist_data[element].getOutput()] / NeuralNet.FACTOR).sum();
+        double quality = Arrays.stream(batch).parallel().mapToDouble(element -> calculateResult(element, weights)).sum();
+        return quality;
+    }
+
+    private double calculateResult(int element, long[] weights) {
+        long[] calculate = net.calculate(weights, this.mnist_data[element].getInput());
+        double confidence = (double) calculate[this.mnist_data[element].getOutput()] / NeuralNet.FACTOR;
+        int found = IntStream.range(0, calculate.length)
+                .reduce((a,b)->calculate[a]<calculate[b]? b: a)
+                .getAsInt();
+        return confidence + (found==mnist_data[element].getOutput()?0:-1);
     }
 
     private int[] getBatch() {
