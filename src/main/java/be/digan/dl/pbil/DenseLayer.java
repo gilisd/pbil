@@ -10,11 +10,11 @@ public class DenseLayer implements Layer {
     private final int weightCount;
     List<Node> nodes;
 
-    public DenseLayer(int inputSize, int outputSize) {
+    public DenseLayer(int inputSize, int outputSize, ActivationFunction activation) {
         nodes = new ArrayList<>();
         for (int i = 0; i<outputSize; i ++) {
             int start = i * (inputSize + 1);
-            nodes.add(new Node(inputSize));
+            nodes.add(new Node(inputSize, activation));
         }
         weightCount = nodes.stream().mapToInt(n -> n.getWeightCount()).sum();
      }
@@ -52,6 +52,6 @@ public class DenseLayer implements Layer {
 
     @Override
     public String toString() {
-        return "DenseLayer(in: "+ (nodes.get(0).getWeightCount() -1) + ", out: " + nodes.size() +")";
+        return "DenseLayer(in: "+ (nodes.get(0).getWeightCount() -1) + ", out: " + nodes.size() + ", " + nodes.get(0).getActivation().getName() + ")";
     }
 }

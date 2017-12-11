@@ -25,8 +25,8 @@ public class Mnist {
         PbilNeuralNetTrainer trainer
 
                 = new PbilNeuralNetTrainer();
-        NeuralNet net = getTripleLayerExperiment();
-//        NeuralNet net = getDualLayerExperiment();
+//        NeuralNet net = getTripleLayerExperiment();
+        NeuralNet net = getDualLayerExperiment();
 //        NeuralNet net = getSingleLayerExperiment();
 
         long before = new Date().getTime();
@@ -36,22 +36,22 @@ public class Mnist {
 
     private static NeuralNet getSingleLayerExperiment() {
         NeuralNet net = new NeuralNet();
-        net.addLayer(new DenseLayer(28*28,10));
+        net.addLayer(new DenseLayer(28*28,10, new Relu()));
         net.addLayer(new Softmax());
         return net;
     }
     private static NeuralNet getDualLayerExperiment() {
         NeuralNet net = new NeuralNet();
-        net.addLayer(new DenseLayer(28*28,28*28));
-        net.addLayer(new DenseLayer(28*28,10));
-        net.addLayer(new Softmax());
+        net.addLayer(new DenseLayer(28*28,100, new Tanh()));
+        net.addLayer(new DenseLayer(100,10, new Tanh()));
+        net.addLayer(new FlattenMin());
         return net;
     }
     private static NeuralNet getTripleLayerExperiment() {
         NeuralNet net = new NeuralNet();
-        net.addLayer(new DenseLayer(28*28,100));
-        net.addLayer(new DenseLayer(100,50));
-        net.addLayer(new DenseLayer(50,10));
+        net.addLayer(new DenseLayer(28*28,100, new Tanh()));
+        net.addLayer(new DenseLayer(100,50, new Tanh()));
+        net.addLayer(new DenseLayer(50,10, new Tanh()));
 //        net.addLayer(new Softmax());
         net.addLayer(new FlattenMin());
         return net;

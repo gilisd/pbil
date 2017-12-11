@@ -14,9 +14,9 @@ import static java.util.stream.Collectors.joining;
 // Reduce memory load by evaluating item by item
 public class PbilNeuralNetTrainer {
     private static final Logger LOG = Logger.getLogger(PbilNeuralNetTrainer.class);
-    private static final int GENERATION_COUNT = 10000;
-    private static final int POPULATION = 50;
-    private static final int BATCH_SIZE = 250;
+    private static final int GENERATION_COUNT = 1000;
+    private static final int POPULATION = 200;
+    private static final int BATCH_SIZE = 100;
     private static final int TEST_COUNT = 1000;
     private Experiment[] mnist_data;
 
@@ -114,7 +114,7 @@ public class PbilNeuralNetTrainer {
         int found = IntStream.range(0, calculate.length)
                 .reduce((a,b)->calculate[a]<calculate[b]? b: a)
                 .getAsInt();
-        return confidence + (found==mnist_data[element].getOutput()?0:-1);
+        return confidence + (found==mnist_data[element].getOutput()?0:-(double)calculate[found]/NeuralNet.FACTOR);
     }
 
     private int[] getBatch() {

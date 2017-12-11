@@ -4,15 +4,12 @@ import java.util.stream.IntStream;
 
 public class Node {
     private int weightCount;
+    private ActivationFunction activation;
     private int weightIndex;
 
-    public Node(int weightCount) {
+    public Node(int weightCount, ActivationFunction activation) {
         this.weightCount = weightCount;
-    }
-
-    private long relu(long value) {
-        return (long)(Math.tanh((double)value / NeuralNet.FACTOR) * NeuralNet.FACTOR);
-        //return value<0?0:value;
+        this.activation = activation;
     }
 
     public int getWeightCount() {
@@ -24,13 +21,17 @@ public class Node {
     }
 
     public Node clone() {
-        return new Node(weightCount);
+        return new Node(weightCount, activation);
     }
 
     public long calculate(final long[] weights, final long[] input) {
         long value = IntStream.range(0, input.length)
                 .mapToLong(i -> input[i] * weights[weightIndex + i] / NeuralNet.FACTOR)
                 .sum();// + weights[weightIndex + weightCount];
-        return relu(value);
+        return activation.activate(value);
+    }
+
+    public ActivationFunction getActivation() {
+        return activation;
     }
 }
