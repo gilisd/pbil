@@ -1,15 +1,15 @@
-package be.digan.dl.pbil;
+package be.digan.dl.pbil.neuralnet.layer;
+
+import be.digan.dl.pbil.neuralnet.NeuralNet;
 
 import java.util.Arrays;
 
-public class Softmax implements Layer {
+public class FlattenSquare implements Layer {
 
 
     @Override
     public long[] calculate(long[] weights, long[] input) {
-        long max = NeuralNet.FACTOR;//Arrays.stream(input).max().getAsLong();
-
-        double[] exp = Arrays.stream(input).mapToDouble(i -> Math.exp((double)i / max)).toArray();
+        double[] exp = Arrays.stream(input).mapToDouble(i -> i*i ).toArray();
         double sum = Arrays.stream(exp).sum();
 
         long[] collect = Arrays.stream(exp).mapToLong(i -> (long)((i / sum) * NeuralNet.FACTOR)).toArray();
@@ -34,7 +34,7 @@ public class Softmax implements Layer {
 
     @Override
     public String toString() {
-        return "Softmax()";
+        return "FlattenSquare()";
     }
 
 }

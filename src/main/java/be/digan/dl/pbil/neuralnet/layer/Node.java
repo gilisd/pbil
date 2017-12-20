@@ -1,4 +1,7 @@
-package be.digan.dl.pbil;
+package be.digan.dl.pbil.neuralnet.layer;
+
+import be.digan.dl.pbil.neuralnet.NeuralNet;
+import be.digan.dl.pbil.neuralnet.activation.ActivationFunction;
 
 import java.util.stream.IntStream;
 

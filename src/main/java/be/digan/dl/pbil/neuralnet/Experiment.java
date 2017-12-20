@@ -1,4 +1,4 @@
-package be.digan.dl.pbil;
+package be.digan.dl.pbil.neuralnet;
 
 public class Experiment {
     final private long[] input;

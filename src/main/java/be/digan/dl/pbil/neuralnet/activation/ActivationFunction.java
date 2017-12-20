@@ -1,4 +1,4 @@
-package be.digan.dl.pbil;
+package be.digan.dl.pbil.neuralnet.activation;
 
 public interface ActivationFunction {
     long activate(long value);

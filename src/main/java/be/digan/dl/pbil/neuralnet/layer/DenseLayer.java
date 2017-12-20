@@ -1,10 +1,11 @@
-package be.digan.dl.pbil;
+package be.digan.dl.pbil.neuralnet.layer;
+
+import be.digan.dl.pbil.neuralnet.activation.ActivationFunction;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public class DenseLayer implements Layer {
     private final int weightCount;
